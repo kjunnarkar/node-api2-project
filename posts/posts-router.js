@@ -10,11 +10,11 @@ router.post('/', (req, res) => {
     
     Posts.insert(body)
         .then(add => {
-            if (add) {
-                res.status(201).json(body);
+            if (add > 0) {
+                res.status(201).json(add); // changed from body to add
             }
             else {
-                res.status(400).json({ success: false, errorMessage: "Please provide title and contents for the post." }); // Do not receive 400 status
+                res.status(400).json({ success: false, errorMessage: "Please provide title and contents for the post." }); 
             }
         })
         .catch(err => res.status(500).json({ success: false, errorMessage: "There was an error while saving the post to the database" }));
@@ -24,20 +24,21 @@ router.post('/:id/comments', (req, res) => {
 
     const body = req.body;
     const { id } = req.params;
+    body.post_id = id;
 
     Posts.insertComment(body)
         .then(add => {
-            if (add) {
+            if (add.id > 0) {
                 console.log('this is body for post comments', body);
                 console.log('this is add for post comments', add);
-                res.status(201).json(body);
+                res.status(201).json(add); // changed from "body" to "add"
             }
             else if (!body.text || body.text === "" || body.text === null) {
                 res.status(400).json({ errorMessage: "Please provide text for the comment" });
-            } // 400 not working
+            } 
             else {
                 res.status(404).json(({ message: "The post with the specified id does not exist" }));
-            } // 404 not working
+            } 
         })
         .catch(err => res.status(500).json({ error: "There was an error while saving the comment to the database"
         }))
@@ -74,12 +75,14 @@ router.get('/:id/comments', (req, res) => {
 
     Posts.findPostComments(id)
         .then(retrieve => {
-            if (retrieve) {
+            if (retrieve.length > 0) {
+                console.log('this is id from get comments by id', id);
+                console.log('this is retrieve from get comments by id', retrieve);
                 res.status(200).json(retrieve);
             }
             else {
-                res.status(404).json({ message: "The post with the specified ID does not exist" });
-            } // not getting 404 with invalid id, getting empty array instead
+                res.status(404).json({ message: "The get with the specified ID does not exist" });
+            } 
         })
         .catch(err => res.status(500).json({ error: "The comments information could not be retrieved" }));
 });
@@ -107,7 +110,10 @@ router.put('/:id', (req, res) => {
 
     Posts.update(id, body)
         .then(updated => {
-            if (updated) {
+            if (updated > 0) {
+                console.log('this is updated from put to an id', updated);
+                console.log('this is body from put to an id', body);
+                console.log('this is id from put to an id', id);
                 res.status(200).json(body);
             }
             else if (!body.title || !body.contents) {
