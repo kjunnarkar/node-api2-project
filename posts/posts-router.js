@@ -28,14 +28,14 @@ router.post('/:id/comments', (req, res) => {
 
     const addBody = req.body;
     const { id } = req.params;
-    //addBody.post_id = id;
+    addBody.post_id = id;
 
     Posts.insertComment(addBody)
         .then(add => {
-            if (addBody.text && addBody.post_id && add.id > 0) {
+            if (add) {
                 console.log('this is body for post comments', addBody);
                 console.log('this is add for post comments', add);
-                res.status(201).json(add); // changed from "addBody" to "add"
+                res.status(201).json(add); // changed from "addBody" to "add" to get { ID }
             }
             else {
                 res.status(404).json({ message: "The post with the specified id does not exist" });
@@ -132,7 +132,7 @@ router.put('/:id', (req, res) => {
             }
         })
         .catch(err => {
-            if (!newInfo.title && !newInfo.contents) {
+            if (!newInfo.title || !newInfo.contents) {
                 res.status(400).json({ errorMessage: "Please provide title and contents for the post" });
             } 
             else { 

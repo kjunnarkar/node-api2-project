@@ -8,7 +8,8 @@ server.use('/api/posts', postsRouter);
 
 // default route handler and test the server
 server.get('/', (req, res) => {
-    res.send('The server is returning data for the api2 project')
+    const messageMOTD = process.env.MOTD;
+    res.send({ message: messageMOTD })
 });
 
 module.exports = server;
